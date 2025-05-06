@@ -15,14 +15,12 @@ class DairyCattle extends Cattle{
 
     @Override
     public boolean checkBarcode() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'checkBarcode'");
+        return true;
     }
 
     @Override
     public String checkHealth() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'checkHealth'");
+       return "Healthy";
     }
 
 
@@ -35,14 +33,12 @@ class BeefCattle extends Cattle{
 
     @Override
     public boolean checkBarcode() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'checkBarcode'");
+        return true;
     }
 
     @Override
     public String checkHealth() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'checkHealth'");
+        return "Moderate";
     }
 
 
