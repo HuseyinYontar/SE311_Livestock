@@ -11,3 +11,19 @@ public class Location {
         return new int[]{x_axis,y_axis};
     }
 }
+
+class ZigbeeSignal{
+
+}
+
+class BluetoothSignal{
+
+}
+
+class BluetoothToZigbeeAdapter extends ZigbeeSignal{
+    private BluetoothSignal bluetoothSignal;
+
+    public BluetoothToZigbeeAdapter(BluetoothSignal bSignal){
+        bluetoothSignal = bSignal;
+    }
+}
