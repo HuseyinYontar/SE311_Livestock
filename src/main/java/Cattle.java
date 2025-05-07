@@ -13,6 +13,10 @@ public abstract class Cattle {
     public int getCattleID() {
         return cattleID;
     }
+
+    public void setIn_out_state(boolean state){
+        in_out_state = state;
+    }
 }
 
 class DairyCattle extends Cattle{

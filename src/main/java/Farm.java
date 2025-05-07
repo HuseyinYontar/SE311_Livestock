@@ -16,8 +16,8 @@ public class Farm{
     //private Farmer farmer;
     private ArrayList<Cattle> cattles;
     private Location location;
-    private final int horizontal_edge_length = 200;
-    private final int vertical_edge_length = 200;
+    public static final int horizontal_edge_length = 200;
+    public static int vertical_edge_length = 200;
 
     public Farm(){
         cattles = new ArrayList<>();
