@@ -1,6 +1,14 @@
 import java.util.ArrayList;
 
-public abstract class Cattle {
+public abstract class Cattle{
+    protected int cattleId;
+    public abstract void accept(Visitor v);
+    public abstract boolean checkBarcode();
+    public abstract String checkHealth();
+    public int getCattleId(){
+        return cattleId;
+    }
+  
     private int cattleID;
     private boolean in_out_state;
     private LocationDevice device;
@@ -16,13 +24,42 @@ public abstract class Cattle {
 
     public void setIn_out_state(boolean state){
         in_out_state = state;
+
     }
 }
 
 class DairyCattle extends Cattle{
+    public void accept(Visitor v) {
+        v.visit(this);
+    }
 
+    @Override
+    public boolean checkBarcode() {
+        return true;
+    }
+
+    @Override
+    public String checkHealth() {
+       return "Healthy";
+    }
+
+  
 }
 
 class BeefCattle extends Cattle{
+    public void accept(Visitor v) {
+        v.visit(this);
+    }
+
+    @Override
+    public boolean checkBarcode() {
+        return true;
+    }
+
+    @Override
+    public String checkHealth() {
+        return "Moderate";
+    }
+
 
 }
