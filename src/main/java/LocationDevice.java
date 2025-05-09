@@ -4,6 +4,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public abstract class LocationDevice {
+    //TODO HASAN, cattle yerine owner diyebiliriz
     protected Cattle cattle;
     protected Location current_location;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -12,18 +13,22 @@ public abstract class LocationDevice {
         this.cattle = cattle;
         this.current_location = Randomizer.getRandomLocation();
         // locationa göre ineğin boolean state'i setlenmeli.
-        scheduler.scheduleAtFixedRate(this::updateLocationEverySecond, 0, 1, TimeUnit.SECONDS);
+
+        // TODO HASAN, updatenin tetiklenmesinin ana bir merkezden olması mı yoksa her devicenin kendisini tetiklemesi konusunu raporda belirt!
+        scheduler.scheduleAtFixedRate(this::updateLocationEverySecond, 5, 1, TimeUnit.SECONDS);
     }
 
     abstract void sendSignal();//?? idk
 
     private void updateLocationEverySecond() {
+        boolean wasOut = cattle.getIsOut();
+
         current_location.updateLocation(Randomizer.getRandomUpdateValue());
-        if (calculate_cattle_in_or_out()) {
-            cattle.setIn_out_state(true);
-        } else {
-            cattle.setIn_out_state(false);
-            //NOTIFY OBSERVER.
+        boolean isNowOut = calculate_cattle_in_or_out();
+
+        if (wasOut != isNowOut) {
+            cattle.setIsOut(isNowOut);
+            cattle.notifyObserver();
         }
     }
 
@@ -39,6 +44,8 @@ public abstract class LocationDevice {
         return Math.abs(current_location_values[0]) > Farm.horizontal_edge_length / 2
                 || Math.abs(current_location_values[1]) > Farm.vertical_edge_length / 2;
     }
+
+
 }
 
 class ZigbeeDevice extends LocationDevice {
@@ -94,6 +101,7 @@ class Location {
         return new int[]{x_axis, y_axis};
     }
 
+    //TODO HASAN, updateLocation yerine addLocation daha mantıklı olabilir.
     public void updateLocation(int[] values) {
         x_axis = x_axis + values[0];
         y_axis = y_axis + values[1];
@@ -108,7 +116,7 @@ class Randomizer {
     }
 
     public static int[] getRandomUpdateValue() {
-        return new int[]{rd.nextInt(-5, 5), rd.nextInt(-5, 5)};
+        return new int[]{rd.nextInt(-20, 20), rd.nextInt(-5, 5)};
     }
 
     public static int getRandomizedValue_0_to_10() {
