@@ -42,35 +42,40 @@ public abstract class LocationDevice {
 }
 
 class ZigbeeDevice extends LocationDevice {
-
     public ZigbeeDevice(Cattle cattle) {
         super(cattle);
     }
 
     @Override
     void sendSignal() {
-
+        ZigbeeSignal signal = new ZigbeeSignal();
+        signal.sendToServer();
     }
 }
 
 class BluetoothDevice extends LocationDevice {
-
     public BluetoothDevice(Cattle cattle) {
         super(cattle);
     }
 
     @Override
     void sendSignal() {
-
+        BluetoothSignal bluetoothSignal = new BluetoothSignal();
+        BluetoothToZigbeeAdapter adapter = new BluetoothToZigbeeAdapter(bluetoothSignal);
+        adapter.sendToServer();
     }
 }
 
 class ZigbeeSignal {
-
+    void sendToServer() {
+        System.out.println("Zigbee signal sent to server.");
+    }
 }
 
 class BluetoothSignal {
-
+    public void sendRaw() {
+        System.out.println("Bluetooth signal sent (raw).");
+    }
 }
 
 class BluetoothToZigbeeAdapter extends ZigbeeSignal {
@@ -78,6 +83,12 @@ class BluetoothToZigbeeAdapter extends ZigbeeSignal {
 
     public BluetoothToZigbeeAdapter(BluetoothSignal bSignal) {
         bluetoothSignal = bSignal;
+    }
+
+    void sendToServer() {
+        System.out.println("Adapting Bluetooth signal to Zigbee...");
+        bluetoothSignal.sendRaw();
+        System.out.println("Adapted signal sent to server as Zigbee.");
     }
 }
 
@@ -108,7 +119,7 @@ class Randomizer {
     }
 
     public static int[] getRandomUpdateValue() {
-        return new int[]{rd.nextInt(-5, 5), rd.nextInt(-5, 5)};
+        return new int[]{rd.nextInt(-50, 50), rd.nextInt(-50, 50)};
     }
 
     public static int getRandomizedValue_0_to_10() {
