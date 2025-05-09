@@ -1,7 +1,5 @@
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.HashSet;import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Farm{
@@ -20,7 +18,7 @@ public class Farm{
     //private Farmer farmer;
     private ArrayList<Cattle> cattles;
 
-    //TODO Hasan, location -> farmLocation
+    //TODO Hasan, location -> farmLocation isim değişikliği önerisi
     private Location location;
     public static final int horizontal_edge_length = 200;
     public static int vertical_edge_length = 200;
@@ -28,10 +26,6 @@ public class Farm{
     public Farm(){
         cattles = new ArrayList<>();
         location = new Location(0,0);
-    }
-
-    public Location getFarmLocation() {
-        return location;
     }
 
     public void addCattle(Cattle cattle){
@@ -47,20 +41,21 @@ class Farmer implements Observer {
         this.farmerName = farmerName;
     }
 
+    //TODO HASAN, synchronized ekledim önemli, hoca alametifarikasını sorabilir!
     @Override
-    public void notify(Cattle cattle){
+    public synchronized void notify(Cattle cattle){
         boolean isCattleOut = cattle.getIsOut();
 
         if (isCattleOut) {
             outCattles.add(cattle);
             System.out.println("Cattle " + cattle.getCattleId() + " is out now.");
         } else {
-            outCattles.removeIf(c -> c.getCattleId() == cattle.getCattleId()); // güvenli çıkarma
+            outCattles.remove(cattle);
             System.out.println("Cattle " + cattle.getCattleId() + " is in now.");
         }
 
         String outCattlesString = outCattles.stream()
-                .map(c -> "" + c.getCattleId())
+                .map(c -> String.valueOf(c.getCattleId()))
                 .collect(Collectors.joining(", "));
 
         System.out.println("Out cattles: "+ outCattlesString);

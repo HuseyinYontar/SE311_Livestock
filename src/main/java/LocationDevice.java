@@ -21,14 +21,13 @@ public abstract class LocationDevice {
     abstract void sendSignal();//?? idk
 
     private void updateLocationEverySecond() {
-        current_location.updateLocation(Randomizer.getRandomUpdateValue());
         boolean wasOut = cattle.getIsOut();
 
+        current_location.updateLocation(Randomizer.getRandomUpdateValue());
         boolean isNowOut = calculate_cattle_in_or_out();
 
-        cattle.setIsOut(isNowOut);
-
         if (wasOut != isNowOut) {
+            cattle.setIsOut(isNowOut);
             cattle.notifyObserver();
         }
     }
@@ -102,6 +101,7 @@ class Location {
         return new int[]{x_axis, y_axis};
     }
 
+    //TODO HASAN, updateLocation yerine addLocation daha mantıklı olabilir.
     public void updateLocation(int[] values) {
         x_axis = x_axis + values[0];
         y_axis = y_axis + values[1];
@@ -116,7 +116,7 @@ class Randomizer {
     }
 
     public static int[] getRandomUpdateValue() {
-        return new int[]{rd.nextInt(-40, 40), rd.nextInt(-5, 5)};
+        return new int[]{rd.nextInt(-20, 20), rd.nextInt(-5, 5)};
     }
 
     public static int getRandomizedValue_0_to_10() {

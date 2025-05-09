@@ -2,13 +2,11 @@ import java.util.concurrent.CountDownLatch;
 
 public class Test {
     public static void main(String[] args) throws InterruptedException {
-        // Çiftlik oluştur
         Farm farm = new Farm();
+        Farmer farmer = new Farmer("HASAN");
 
-        // Çiftçi oluştur
-        Farmer farmer = new Farmer("Ali Çiftçi");
-
-        // Hayvanları oluştur
+        //TODO HASAN 30 tane inek oluşturan bi factory method olabilir, farm.createCattle(Factory beefCattle, 15) 15 tane oluşturur
+        //TODO HASAN 30 tane inek oluşturan bi factory method olabilir, farm.createCattle(Factory dairyCattle) 14 tane oluşturur
         DairyCattle cattle1 = new DairyCattle();
         BeefCattle cattle2 = new BeefCattle();
         DairyCattle cattle3 = new DairyCattle();
@@ -19,8 +17,6 @@ public class Test {
         BeefCattle cattle8 = new BeefCattle();
         DairyCattle cattle9 = new DairyCattle();
 
-
-        // Hayvanları çiftliğe ekle
         farm.addCattle(cattle1);
         farm.addCattle(cattle2);
         farm.addCattle(cattle3);
@@ -31,7 +27,7 @@ public class Test {
         farm.addCattle(cattle8);
         farm.addCattle(cattle9);
 
-        // Çiftçiyi her hayvanın gözlemcisi olarak ekle
+        //TODO HASAN observer için basit bi metod yazabilriz tek tek ayarlamamak için farm->setFarmObserver(farmer)
         cattle1.setObserver(farmer);
         cattle2.setObserver(farmer);
         cattle3.setObserver(farmer);
@@ -43,7 +39,6 @@ public class Test {
         cattle9.setObserver(farmer);
 
         new CountDownLatch(1).await();
-
     }
 
     // Hayvan hareketlerini simüle eden metot
