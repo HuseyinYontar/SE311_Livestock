@@ -64,7 +64,7 @@ class DairyCattleFoodFactory extends AbstractFoodFactory{
 
 }
 
-class MeetCattleFoodFactory extends AbstractFoodFactory{
+class MeatCattleFoodFactory extends AbstractFoodFactory{
 
     @Override
     public Carbohydrate createCarbohydrateFood() {

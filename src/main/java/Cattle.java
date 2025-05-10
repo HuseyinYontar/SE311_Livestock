@@ -4,8 +4,8 @@ public abstract class Cattle{
     private static int idCounter = 0;
     protected int cattleId;
     public abstract void accept(Visitor v);
-    public abstract boolean checkBarcode();
-    public abstract String checkHealth();
+    public abstract boolean getBarcode();
+    public abstract String getHealth();
     private Observer observer;
 
     //TODO HASAN move that method to the end of the file under getter setters section
@@ -37,12 +37,12 @@ class DairyCattle extends Cattle{
     }
 
     @Override
-    public boolean checkBarcode() {
+    public boolean getBarcode() {
         return true;
     }
 
     @Override
-    public String checkHealth() {
+    public String getHealth() {
        return "Healthy";
     }
 
@@ -55,12 +55,12 @@ class BeefCattle extends Cattle{
     }
 
     @Override
-    public boolean checkBarcode() {
+    public boolean getBarcode() {
         return true;
     }
 
     @Override
-    public String checkHealth() {
+    public String getHealth() {
         return "Moderate";
     }
 
