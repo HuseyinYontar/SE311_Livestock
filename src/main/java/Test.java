@@ -2,8 +2,9 @@ import java.util.concurrent.CountDownLatch;
 
 public class Test {
     public static void main(String[] args) throws InterruptedException {
-        Farm farm = new Farm();
         Farmer farmer = new Farmer("HASAN");
+        Farm farm = new Farm(farmer);
+
 
         //TODO HASAN 30 tane inek oluşturan bi factory method olabilir, farm.createCattle(Factory beefCattle, 15) 15 tane oluşturur
         //TODO HASAN 30 tane inek oluşturan bi factory method olabilir, farm.createCattle(Factory dairyCattle) 14 tane oluşturur
@@ -37,6 +38,10 @@ public class Test {
         cattle7.setObserver(farmer);
         cattle8.setObserver(farmer);
         cattle9.setObserver(farmer);
+
+
+        Thread.sleep(10000);
+        farm.feedCattle();
 
         new CountDownLatch(1).await();
     }

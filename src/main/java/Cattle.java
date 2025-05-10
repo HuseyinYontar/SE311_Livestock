@@ -12,7 +12,7 @@ public abstract class Cattle{
     public int getCattleId(){return cattleId;}
     private boolean isOut;
     private LocationDevice device;
-    // private Observer observer;
+
     public Cattle(){
         // Zigbee device with a probability %80.
         device = Randomizer.getRandomizedValue_0_to_10() <= 8 ? new ZigbeeDevice(this) : new BluetoothDevice(this);
@@ -26,6 +26,12 @@ public abstract class Cattle{
         }
         observer.notify(this);
     }
+
+    public void eat(Protein protein, Carbohydrate carbohydrate){
+        System.out.println("Cattle "+cattleId+" "+protein.getNutritionInfo());
+        System.out.println("Cattle "+cattleId+" "+carbohydrate.getNutritionInfo());
+    }
+
     public void setObserver(Observer observer){this.observer = observer;};
     public Boolean getIsOut(){return isOut;}
     public void setIsOut(Boolean isOut){this.isOut = isOut;}
@@ -45,8 +51,6 @@ class DairyCattle extends Cattle{
     public String getHealth() {
        return "Healthy";
     }
-
-  
 }
 
 class BeefCattle extends Cattle{

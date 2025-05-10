@@ -1,10 +1,11 @@
 import java.util.ArrayList;
-import java.util.HashSet;import java.util.Set;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Farm{
-//          It is assumed that the boundaries are:
-//          -100 <= x <= 100 and -100 <= y <= 100
+//       It is assumed that the boundaries are:
+//       -100 <= x <= 100 and -100 <= y <= 100
 //            +----------200-----------+
 //            |                        |
 //            |                        |
@@ -15,7 +16,7 @@ public class Farm{
 //            |                        |
 //            +------------------------+
 
-    //private Farmer farmer;
+    private Farmer farmer;
     private ArrayList<Cattle> cattles;
 
     //TODO Hasan, location -> farmLocation isim değişikliği önerisi
@@ -23,7 +24,8 @@ public class Farm{
     public static final int horizontal_edge_length = 200;
     public static int vertical_edge_length = 200;
 
-    public Farm(){
+    public Farm(Farmer farmer){
+        this.farmer = farmer;
         cattles = new ArrayList<>();
         location = new Location(0,0);
     }
@@ -31,19 +33,28 @@ public class Farm{
     public void addCattle(Cattle cattle){
         cattles.add(cattle);
     }
+
+    public void feedCattle(){
+        for (Cattle c : cattles){
+            c.accept(farmer);
+        }
+    }
 }
+
 //Via visitor, farmer feeds cattles
+
+
 class Farmer implements Observer, Visitor {
     String farmerName;
     private Set<Cattle> outCattles = new HashSet<>();
 
-    public Farmer(String farmerName){
+    public Farmer(String farmerName) {
         this.farmerName = farmerName;
     }
 
     //TODO HASAN, synchronized ekledim önemli, hoca alametifarikasını sorabilir!
     @Override
-    public synchronized void notify(Cattle cattle){
+    public synchronized void notify(Cattle cattle) {
         boolean isCattleOut = cattle.getIsOut();
 
         if (isCattleOut) {
@@ -58,23 +69,25 @@ class Farmer implements Observer, Visitor {
                 .map(c -> String.valueOf(c.getCattleId()))
                 .collect(Collectors.joining(", "));
 
-        System.out.println("Out cattles: "+ outCattlesString);
+        System.out.println("Out cattles: " + outCattlesString);
     }
 
-    
+
     @Override
     public void visit(DairyCattle cattle) {
         AbstractFoodFactory foodFactory = new DairyCattleFoodFactory();
-        cattle.eat(foodFactory.createProteinFood(),foodFactory.createCarbohydrateFood());
+        cattle.eat(foodFactory.createProteinFood(), foodFactory.createCarbohydrateFood());
     }
 
     @Override
     public void visit(BeefCattle cattle) {
         AbstractFoodFactory foodFactory = new MeatCattleFoodFactory();
         cattle.eat(foodFactory.createProteinFood(), foodFactory.createCarbohydrateFood());
+
+        //TODO: Hüseyin:: canerle visitor konuş, iki tip inek için bu değişmeli mi tartış.
+
     }
 }
-
 interface Observer{
     void notify(Cattle cattle);
 }

@@ -41,7 +41,7 @@ public abstract class LocationDevice {
         // Bu fonksiyon daha sonra observer patternda farmın içinde mi değil mi diye kullanılabilir. şu anki konumunun
         // x ve y deki mutlak değerleri 100den büyükse observer notify edilir.
         int[] current_location_values = current_location.getLocation();
-        return Math.abs(current_location_values[0]) > Farm.horizontal_edge_length / 2
+        return Math.abs(current_location_values[0] ) > Farm.horizontal_edge_length / 2
                 || Math.abs(current_location_values[1]) > Farm.vertical_edge_length / 2;
     }
 
