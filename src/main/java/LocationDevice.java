@@ -12,9 +12,6 @@ public abstract class LocationDevice {
     public LocationDevice(Cattle cattle) {
         this.cattle = cattle;
         this.current_location = Randomizer.getRandomLocation();
-        // locationa göre ineğin boolean state'i setlenmeli.
-
-        // TODO HASAN, updatenin tetiklenmesinin ana bir merkezden olması mı yoksa her devicenin kendisini tetiklemesi konusunu raporda belirt!
         scheduler.scheduleAtFixedRate(this::updateLocationEverySecond, 5, 1, TimeUnit.SECONDS);
     }
 
@@ -41,8 +38,8 @@ public abstract class LocationDevice {
         // Bu fonksiyon daha sonra observer patternda farmın içinde mi değil mi diye kullanılabilir. şu anki konumunun
         // x ve y deki mutlak değerleri 100den büyükse observer notify edilir.
         int[] current_location_values = current_location.getLocation();
-        return Math.abs(current_location_values[0] ) > Farm.horizontal_edge_length / 2
-                || Math.abs(current_location_values[1]) > Farm.vertical_edge_length / 2;
+        return Math.abs(current_location_values[0] ) > Farm.get_horizontal_edge_length() / 2
+                || Math.abs(current_location_values[1]) > Farm.get_vertical_edge_length() / 2;
     }
 
 
@@ -75,6 +72,7 @@ class BluetoothDevice extends LocationDevice {
 
 class ZigbeeSignal {
     void sendToServer() {
+        //FarmDatabase.getInstance().updateCattleLocation();
         System.out.println("Zigbee signal sent to server.");
     }
 }
