@@ -32,8 +32,8 @@ public class Farm{
         cattles.add(cattle);
     }
 }
-
-class Farmer implements Observer {
+//Via visitor, farmer feeds cattles
+class Farmer implements Observer, Visitor {
     String farmerName;
     private Set<Cattle> outCattles = new HashSet<>();
 
@@ -59,6 +59,19 @@ class Farmer implements Observer {
                 .collect(Collectors.joining(", "));
 
         System.out.println("Out cattles: "+ outCattlesString);
+    }
+
+    
+    @Override
+    public void visit(DairyCattle cattle) {
+        AbstractFoodFactory foodFactory = new DairyCattleFoodFactory();
+        cattle.eat(foodFactory.createProteinFood(),foodFactory.createCarbohydrateFood());
+    }
+
+    @Override
+    public void visit(BeefCattle cattle) {
+        AbstractFoodFactory foodFactory = new MeatCattleFoodFactory();
+        cattle.eat(foodFactory.createProteinFood(), foodFactory.createCarbohydrateFood());
     }
 }
 
