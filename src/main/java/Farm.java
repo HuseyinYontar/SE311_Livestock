@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Farm{
@@ -17,77 +20,95 @@ public class Farm{
 //            +------------------------+
 
     private Farmer farmer;
-    private ArrayList<Cattle> cattles;
+    private ArrayList<Cattle> cattleList;
+    private Location farmLocation;
+    private static final int horizontal_edge_length = 200;
+    private static final int vertical_edge_length = 200;
 
-    //TODO Hasan, location -> farmLocation isim değişikliği önerisi
-    private Location location;
-    public static final int horizontal_edge_length = 200;
-    public static int vertical_edge_length = 200;
+    public Farm(){
+        cattleList = new ArrayList<>();
+        farmLocation = new Location(0,0);
+    }
 
-    public Farm(Farmer farmer){
+    public void addFarmer(Farmer farmer){
         this.farmer = farmer;
-        cattles = new ArrayList<>();
-        location = new Location(0,0);
+        farmer.setOwnedFarm(this);
     }
 
     public void addCattle(Cattle cattle){
-        cattles.add(cattle);
+        cattleList.add(cattle);
     }
 
-    public void feedCattle(){
-        for (Cattle c : cattles){
-            c.accept(farmer);
+    public void setAllCattleObservers(Observer observer){
+        for (Cattle cattle : cattleList){
+            cattle.setObserver(observer);
         }
     }
+
+    public void acceptVisitors(Visitor visitor){
+        for (Cattle cattle : cattleList){
+            cattle.accept(visitor);
+        }
+    }
+
+    public static int get_horizontal_edge_length(){return horizontal_edge_length;}
+    public static int get_vertical_edge_length(){return vertical_edge_length;}
 }
 
-//Via visitor, farmer feeds cattles
-
-
+//Via visitor, farmer feeds cattle
 class Farmer implements Observer, Visitor {
-    String farmerName;
-    private Set<Cattle> outCattles = new HashSet<>();
+    private Farm ownedFarm;
+    private String farmerName;
+    private Set<Cattle> outCattleList = new HashSet<>();
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     public Farmer(String farmerName) {
         this.farmerName = farmerName;
+        scheduler.scheduleAtFixedRate(this::feedAllCattleByTimer, 5, 15, TimeUnit.SECONDS);
     }
 
-    //TODO HASAN, synchronized ekledim önemli, hoca alametifarikasını sorabilir!
     @Override
     public synchronized void notify(Cattle cattle) {
         boolean isCattleOut = cattle.getIsOut();
+        System.out.println("----------------------");
 
         if (isCattleOut) {
-            outCattles.add(cattle);
-            System.out.println("Cattle " + cattle.getCattleId() + " is out now.");
+            outCattleList.add(cattle);
+            System.out.println("Cattle " + cattle.getEarTagUniqueId() + " is out now.");
         } else {
-            outCattles.remove(cattle);
-            System.out.println("Cattle " + cattle.getCattleId() + " is in now.");
+            outCattleList.remove(cattle);
+            System.out.println("Cattle " + cattle.getEarTagUniqueId() + " is in now.");
         }
 
-        String outCattlesString = outCattles.stream()
-                .map(c -> String.valueOf(c.getCattleId()))
+        //TODO HÜSEYİN, for loop ile yaz.
+        String outCattleString = outCattleList.stream()
+                .map(c -> String.valueOf(c.getEarTagUniqueId()))
                 .collect(Collectors.joining(", "));
 
-        System.out.println("Out cattles: " + outCattlesString);
+        System.out.println("Out cattle: " + outCattleString);
     }
-
 
     @Override
     public void visit(DairyCattle cattle) {
         AbstractFoodFactory foodFactory = new DairyCattleFoodFactory();
-        cattle.eat(foodFactory.createProteinFood(), foodFactory.createCarbohydrateFood());
+        cattle.eat(foodFactory);
     }
 
     @Override
     public void visit(BeefCattle cattle) {
         AbstractFoodFactory foodFactory = new MeatCattleFoodFactory();
-        cattle.eat(foodFactory.createProteinFood(), foodFactory.createCarbohydrateFood());
+        cattle.eat(foodFactory);
+    }
 
-        //TODO: Hüseyin:: canerle visitor konuş, iki tip inek için bu değişmeli mi tartış.
+    public void setOwnedFarm(Farm farm){
+        this.ownedFarm = farm;
+    }
 
+    public void feedAllCattleByTimer(){
+        ownedFarm.acceptVisitors(this);
     }
 }
+
 interface Observer{
     void notify(Cattle cattle);
 }

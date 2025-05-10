@@ -7,36 +7,33 @@ class MinistryInspectorVisitor implements Visitor{
 
     @Override
     public void visit(DairyCattle cattle) {
-       boolean barcode = cattle.getBarcode();
-       if(barcode){
-        System.out.println(cattle.getCattleId() + " has barcode." );
+       if(cattle.getEarTagUniqueId() != 0){
+           System.out.println(cattle.getEarTagUniqueId() + " has barcode." );
        }else{
-           System.out.println(cattle.getCattleId() + " does not have barcode.");
+           System.out.println(cattle.getEarTagUniqueId() + " does not have barcode.");
        }
     }
 
     @Override
     public void visit(BeefCattle cattle) {
-        boolean barcode = cattle.getBarcode();
-        if (barcode) {
-            System.out.println(cattle.getCattleId() + " has barcode.");
+        if (cattle.getEarTagUniqueId() != 0) {
+            System.out.println(cattle.getEarTagUniqueId() + " has barcode.");
         } else {
-            System.out.println(cattle.getCattleId() + " does not have barcode.");
+            System.out.println(cattle.getEarTagUniqueId() + " does not have barcode.");
         }
     }
-
 }
 
 class VeterinarianVisitor implements Visitor{
     @Override
     public void visit(DairyCattle cattle) {
         String status = cattle.getHealth();
-        System.out.println("DairyCattle: " +cattle.getCattleId() + " status:  " + status);
+        System.out.println("DairyCattle: " +cattle.getEarTagUniqueId() + " status:  " + status);
     }
 
     @Override
     public void visit(BeefCattle cattle) {
         String status = cattle.getHealth();
-        System.out.println("BeefCattle: " +cattle.getCattleId() + " status:  " + status);
+        System.out.println("BeefCattle: " +cattle.getEarTagUniqueId() + " status:  " + status);
     }
 }
