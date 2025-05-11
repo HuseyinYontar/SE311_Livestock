@@ -4,28 +4,28 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public abstract class LocationDevice {
-    //TODO HASAN, cattle yerine owner diyebiliriz
-    protected Cattle cattle;
+    protected Cattle ownerCattle;
     protected Location current_location;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-    public LocationDevice(Cattle cattle) {
-        this.cattle = cattle;
+    public LocationDevice(Cattle ownerCattle) {
+        this.ownerCattle = ownerCattle;
         this.current_location = Randomizer.getRandomLocation();
-        scheduler.scheduleAtFixedRate(this::updateLocationEverySecond, 5, 1, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::updateLocationEverySecond, 1097, 1097, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(this::sendSignal, 7500, 5000, TimeUnit.MILLISECONDS);
     }
 
-    abstract void sendSignal();//?? idk
+    abstract void sendSignal();
 
     private void updateLocationEverySecond() {
-        boolean wasOut = cattle.getIsOut();
+        boolean wasOut = ownerCattle.getIsOut();
 
         current_location.updateLocation(Randomizer.getRandomUpdateValue());
         boolean isNowOut = calculate_cattle_in_or_out();
 
         if (wasOut != isNowOut) {
-            cattle.setIsOut(isNowOut);
-            cattle.notifyObserver();
+            ownerCattle.setIsOut(isNowOut);
+            ownerCattle.notifyObserver();
         }
     }
 
@@ -33,15 +33,10 @@ public abstract class LocationDevice {
      * @return true if the cattle in the farm's boundaries, false if not.
      */
     private boolean calculate_cattle_in_or_out() {
-        // Burayı nasıl yapmam gerektiğinden emin değilim. Cattlelarda farm tutmamız gerekiyor ki
-        // farmın locationını alabilelim, ya da farmda locationları public olarak diğerlerine yaycaz ki kullanabilelim.
-        // Bu fonksiyon daha sonra observer patternda farmın içinde mi değil mi diye kullanılabilir. şu anki konumunun
-        // x ve y deki mutlak değerleri 100den büyükse observer notify edilir.
         int[] current_location_values = current_location.getLocation();
-        return Math.abs(current_location_values[0] ) > Farm.get_horizontal_edge_length() / 2
-                || Math.abs(current_location_values[1]) > Farm.get_vertical_edge_length() / 2;
+        return Math.abs(current_location_values[0] - Farm.getFarmLocation().getLocation()[0]) > 100
+                || Math.abs(current_location_values[1] - Farm.getFarmLocation().getLocation()[1]) > 100;
     }
-
 
 }
 
@@ -52,8 +47,8 @@ class ZigbeeDevice extends LocationDevice {
 
     @Override
     void sendSignal() {
-        ZigbeeSignal signal = new ZigbeeSignal();
-        signal.sendToServer();
+        ZigbeeSignal signal = new ZigbeeSignal(ownerCattle.getEarTagUniqueId(), current_location);
+        FarmDatabase.getInstance().updateCattleLocation(signal.sendZigbeeSignal());
     }
 }
 
@@ -64,22 +59,66 @@ class BluetoothDevice extends LocationDevice {
 
     @Override
     void sendSignal() {
-        BluetoothSignal bluetoothSignal = new BluetoothSignal();
+        BluetoothSignal bluetoothSignal = new BluetoothSignal(ownerCattle.getEarTagUniqueId(), current_location);
         BluetoothToZigbeeAdapter adapter = new BluetoothToZigbeeAdapter(bluetoothSignal);
-        adapter.sendToServer();
+        FarmDatabase.getInstance().updateCattleLocation(adapter.sendZigbeeSignal());
     }
 }
 
 class ZigbeeSignal {
-    void sendToServer() {
-        //FarmDatabase.getInstance().updateCattleLocation();
-        System.out.println("Zigbee signal sent to server.");
+    private int earTagUniqueId;
+    private Location currentLocation;
+
+    public ZigbeeSignal(int earTagUniqueId, Location currentLocation) {
+        this.earTagUniqueId = earTagUniqueId;
+        this.currentLocation = currentLocation;
+    }
+
+    public ZigbeeSignal() {
+    }
+
+    public ZigbeeSignal sendZigbeeSignal() {
+        System.out.println("Zigbee signal sent to server. ↗");
+        return this;
+    }
+
+    public int getEarTagUniqueId() {
+        return earTagUniqueId;
+    }
+
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setEarTagUniqueId(int earTagUniqueId) {
+        this.earTagUniqueId = earTagUniqueId;
+    }
+
+    public void setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
     }
 }
 
 class BluetoothSignal {
-    public void sendRaw() {
-        System.out.println("Bluetooth signal sent (raw).");
+    private int earTagUniqueId;
+    private Location currentLocation;
+
+    public BluetoothSignal(int earTagUniqueId, Location currentLocation) {
+        this.earTagUniqueId = earTagUniqueId;
+        this.currentLocation = currentLocation;
+    }
+
+    public BluetoothSignal sendBluetoothSignal() {
+        System.out.println("Bluetooth signal sent to adapter.        ⤵");
+        return this;
+    }
+
+    public int getEarTagUniqueId() {
+        return earTagUniqueId;
+    }
+
+    public Location getCurrentLocation() {
+        return currentLocation;
     }
 }
 
@@ -87,13 +126,16 @@ class BluetoothToZigbeeAdapter extends ZigbeeSignal {
     private BluetoothSignal bluetoothSignal;
 
     public BluetoothToZigbeeAdapter(BluetoothSignal bSignal) {
-        bluetoothSignal = bSignal;
+        super();
+        bluetoothSignal = bSignal.sendBluetoothSignal();
     }
 
-    void sendToServer() {
-        System.out.println("Adapting Bluetooth signal to Zigbee...");
-        bluetoothSignal.sendRaw();
-        System.out.println("Adapted signal sent to server as Zigbee.");
+    public ZigbeeSignal sendZigbeeSignal() {
+        System.out.println("Adapting Bluetooth signal to Zigbee...   ↕");
+        setEarTagUniqueId(bluetoothSignal.getEarTagUniqueId());
+        setCurrentLocation(bluetoothSignal.getCurrentLocation());
+        System.out.println("Adapted signal sent to server as Zigbee. ↗");
+        return this;
     }
 }
 
@@ -114,6 +156,10 @@ class Location {
     public void updateLocation(int[] values) {
         x_axis = x_axis + values[0];
         y_axis = y_axis + values[1];
+    }
+
+    public String toString() {
+        return "location: x=" + x_axis + " y=" + y_axis;
     }
 }
 

@@ -1,52 +1,66 @@
-public abstract class Cattle{
+public abstract class Cattle {
     private static int cattleCounter = 0;
-    protected int earTagUniqueId = 0;
+    private int earTagUniqueId = 0;
+
     public abstract void accept(Visitor v);
+
     public abstract String getHealth();
+
     private Observer observer;
     private boolean isOut;
     private LocationDevice device;
 
-    public Cattle(){
+    public Cattle() {
         // Zigbee device with a probability %80.
         device = Randomizer.getRandomizedValue_0_to_10() <= 8 ? new ZigbeeDevice(this) : new BluetoothDevice(this);
         this.earTagUniqueId = ++cattleCounter;
     }
 
-    public void notifyObserver(){
-        if (observer == null){
-            System.out.print("Observer haven't set yer for cattleId:" + earTagUniqueId);
+    public void notifyObserver() {
+        if (observer == null) {
+            System.out.print("Observer haven't set yet for cattleId:" + earTagUniqueId);
             return;
         }
         observer.notify(this);
     }
 
-    public void eat(AbstractFoodFactory foodFactory){
+    public void eat(AbstractFoodFactory foodFactory) {
         Protein protein = foodFactory.createProteinFood();
         Carbohydrate carbohydrate = foodFactory.createCarbohydrateFood();
-        
-        System.out.println("Cattle "+ earTagUniqueId +" "+protein.getNutritionInfo());
-        System.out.println("Cattle "+ earTagUniqueId +" "+carbohydrate.getNutritionInfo());
+
+        System.out.println("| Cattle " + earTagUniqueId + " " + protein.getNutritionInfo());
+        System.out.println("| Cattle " + earTagUniqueId + " " + carbohydrate.getNutritionInfo());
     }
 
-    public int getEarTagUniqueId(){return earTagUniqueId;}
-    public void setObserver(Observer observer){this.observer = observer;};
-    public Boolean getIsOut(){return isOut;}
-    public void setIsOut(Boolean isOut){this.isOut = isOut;}
+    public int getEarTagUniqueId() {
+        return earTagUniqueId;
+    }
+
+    public void setObserver(Observer observer) {
+        this.observer = observer;
+    }
+
+    public Boolean getIsOut() {
+        return isOut;
+    }
+
+    public void setIsOut(Boolean isOut) {
+        this.isOut = isOut;
+    }
 }
 
-class DairyCattle extends Cattle{
+class DairyCattle extends Cattle {
     public void accept(Visitor v) {
         v.visit(this);
     }
 
     @Override
     public String getHealth() {
-       return "Healthy";
+        return "Healthy";
     }
 }
 
-class BeefCattle extends Cattle{
+class BeefCattle extends Cattle {
     public void accept(Visitor v) {
         v.visit(this);
     }
@@ -55,6 +69,4 @@ class BeefCattle extends Cattle{
     public String getHealth() {
         return "Moderate";
     }
-
-
 }

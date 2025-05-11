@@ -1,39 +1,40 @@
-public interface Visitor{
+public interface Visitor {
     void visit(DairyCattle cattle);
+
     void visit(BeefCattle cattle);
 }
 
-class MinistryInspectorVisitor implements Visitor{
+class MinistryInspectorVisitor implements Visitor {
 
     @Override
     public void visit(DairyCattle cattle) {
-       if(cattle.getEarTagUniqueId() != 0){
-           System.out.println(cattle.getEarTagUniqueId() + " has barcode." );
-       }else{
-           System.out.println(cattle.getEarTagUniqueId() + " does not have barcode.");
-       }
+        if (cattle.getEarTagUniqueId() != 0) {
+            System.out.println("Ministry Inspector: Dairy Cattle " + cattle.getEarTagUniqueId() + " has barcode.");
+        } else {
+            System.out.println("Ministry Inspector: Dairy Cattle " + cattle.getEarTagUniqueId() + " does not have barcode.");
+        }
     }
 
     @Override
     public void visit(BeefCattle cattle) {
         if (cattle.getEarTagUniqueId() != 0) {
-            System.out.println(cattle.getEarTagUniqueId() + " has barcode.");
+            System.out.println("Ministry Inspector: Beef Cattle "+cattle.getEarTagUniqueId() + " has barcode.");
         } else {
-            System.out.println(cattle.getEarTagUniqueId() + " does not have barcode.");
+            System.out.println("Ministry Inspector: Beef Cattle "+cattle.getEarTagUniqueId() + " does not have barcode.");
         }
     }
 }
 
-class VeterinarianVisitor implements Visitor{
+class VeterinarianVisitor implements Visitor {
     @Override
     public void visit(DairyCattle cattle) {
         String status = cattle.getHealth();
-        System.out.println("DairyCattle: " +cattle.getEarTagUniqueId() + " status:  " + status);
+        System.out.println("Veterinarian: Dairy Cattle: " + cattle.getEarTagUniqueId() + " status:  " + status + ". Vaccinating...");
     }
 
     @Override
     public void visit(BeefCattle cattle) {
         String status = cattle.getHealth();
-        System.out.println("BeefCattle: " +cattle.getEarTagUniqueId() + " status:  " + status);
+        System.out.println("Veterinarian: Beef Cattle: " + cattle.getEarTagUniqueId() + " status:  " + status + ". Vaccinating...");
     }
 }

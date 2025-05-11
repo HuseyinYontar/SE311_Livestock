@@ -6,7 +6,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class Farm{
+public class Farm {
 //       It is assumed that the boundaries are:
 //       -100 <= x <= 100 and -100 <= y <= 100
 //            +----------200-----------+
@@ -21,38 +21,37 @@ public class Farm{
 
     private Farmer farmer;
     private ArrayList<Cattle> cattleList;
-    private Location farmLocation;
-    private static final int horizontal_edge_length = 200;
-    private static final int vertical_edge_length = 200;
+    private static Location farmLocation;
 
-    public Farm(){
+    public Farm() {
         cattleList = new ArrayList<>();
-        farmLocation = new Location(0,0);
+        farmLocation = new Location(0, 0);
     }
 
-    public void addFarmer(Farmer farmer){
+    public void addFarmer(Farmer farmer) {
         this.farmer = farmer;
         farmer.setOwnedFarm(this);
     }
 
-    public void addCattle(Cattle cattle){
+    public void addCattle(Cattle cattle) {
         cattleList.add(cattle);
     }
 
-    public void setAllCattleObservers(Observer observer){
-        for (Cattle cattle : cattleList){
+    public void setAllCattleObservers(Observer observer) {
+        for (Cattle cattle : cattleList) {
             cattle.setObserver(observer);
         }
     }
 
-    public void acceptVisitors(Visitor visitor){
-        for (Cattle cattle : cattleList){
+    public void acceptVisitors(Visitor visitor) {
+        for (Cattle cattle : cattleList) {
             cattle.accept(visitor);
         }
     }
 
-    public static int get_horizontal_edge_length(){return horizontal_edge_length;}
-    public static int get_vertical_edge_length(){return vertical_edge_length;}
+    public static Location getFarmLocation() {
+        return farmLocation;
+    }
 }
 
 //Via visitor, farmer feeds cattle
@@ -64,14 +63,14 @@ class Farmer implements Observer, Visitor {
 
     public Farmer(String farmerName) {
         this.farmerName = farmerName;
-        scheduler.scheduleAtFixedRate(this::feedAllCattleByTimer, 5, 15, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::feedAllCattleByTimer, 7, 15, TimeUnit.SECONDS);
     }
 
     @Override
     public synchronized void notify(Cattle cattle) {
         boolean isCattleOut = cattle.getIsOut();
-        System.out.println("----------------------");
 
+        System.out.println("---------------------------");
         if (isCattleOut) {
             outCattleList.add(cattle);
             System.out.println("Cattle " + cattle.getEarTagUniqueId() + " is out now.");
@@ -80,12 +79,11 @@ class Farmer implements Observer, Visitor {
             System.out.println("Cattle " + cattle.getEarTagUniqueId() + " is in now.");
         }
 
-        //TODO HÜSEYİN, for loop ile yaz.
         String outCattleString = outCattleList.stream()
                 .map(c -> String.valueOf(c.getEarTagUniqueId()))
                 .collect(Collectors.joining(", "));
-
         System.out.println("Out cattle: " + outCattleString);
+        System.out.println("---------------------------");
     }
 
     @Override
@@ -100,15 +98,57 @@ class Farmer implements Observer, Visitor {
         cattle.eat(foodFactory);
     }
 
-    public void setOwnedFarm(Farm farm){
+    public void setOwnedFarm(Farm farm) {
         this.ownedFarm = farm;
     }
 
-    public void feedAllCattleByTimer(){
+    public void feedAllCattleByTimer() {
+        System.out.println("----Feeding All Cattle-----------------------------------------------------------");
         ownedFarm.acceptVisitors(this);
+        System.out.println("---------------------------------------------------------------------------------");
     }
 }
 
-interface Observer{
+interface Observer {
     void notify(Cattle cattle);
+}
+
+class Test{
+    public static void main(String[] args) throws InterruptedException {
+        Farm farm = new Farm();
+        Farmer farmer = new Farmer("BALIKCI HASAN");
+        farm.addFarmer(farmer);
+        MinistryInspectorVisitor visitorMinistry = new MinistryInspectorVisitor();
+        VeterinarianVisitor visitorVeterinarian = new VeterinarianVisitor();
+
+
+        DairyCattle cattle1 = new DairyCattle();
+        BeefCattle cattle2 = new BeefCattle();
+        DairyCattle cattle3 = new DairyCattle();
+        DairyCattle cattle4 = new DairyCattle();
+        BeefCattle cattle5 = new BeefCattle();
+        DairyCattle cattle6 = new DairyCattle();
+        DairyCattle cattle7 = new DairyCattle();
+        BeefCattle cattle8 = new BeefCattle();
+        DairyCattle cattle9 = new DairyCattle();
+
+        farm.addCattle(cattle1);
+        farm.addCattle(cattle2);
+        farm.addCattle(cattle3);
+        farm.addCattle(cattle4);
+        farm.addCattle(cattle5);
+        farm.addCattle(cattle6);
+        farm.addCattle(cattle7);
+        farm.addCattle(cattle8);
+        farm.addCattle(cattle9);
+
+        farm.setAllCattleObservers(farmer);
+
+        Thread.sleep(11000);
+        seasonalVisitorHelper(farm,visitorMinistry);
+        seasonalVisitorHelper(farm,visitorVeterinarian);
+    }
+    public static void seasonalVisitorHelper(Farm farm, Visitor visitor){
+        farm.acceptVisitors(visitor);
+    }
 }
