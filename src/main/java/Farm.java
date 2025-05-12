@@ -84,7 +84,7 @@ class Farmer implements Observer, Visitor {
      *               every cattle updates its location with a method that is invoked by a scheduled thread.
      */
     @Override
-    public synchronized void notify(Cattle cattle) {
+    public synchronized void update(Cattle cattle) {
         boolean isCattleOut = cattle.getIsOut();
 
         System.out.println("---------------------------");
@@ -136,7 +136,7 @@ class Farmer implements Observer, Visitor {
 }
 
 interface Observer {
-    void notify(Cattle cattle);
+    void update(Cattle cattle);
 }
 
 class Simulate {
@@ -146,7 +146,7 @@ class Simulate {
         printArt();
         
         Farm farm = new Farm();
-        Farmer farmer = new Farmer("BALIKCI HASAN");
+        Farmer farmer = new Farmer("Bob");
         farm.addFarmer(farmer);
         MinistryInspectorVisitor visitorMinistry = new MinistryInspectorVisitor();
         VeterinarianVisitor visitorVeterinarian = new VeterinarianVisitor();
@@ -205,7 +205,7 @@ class Simulate {
                         ||    (__)              ||    (__)              ||    (__)              ||    (__)
                         ||w--||                 ||w--||                 ||w--||                 ||w--||        
                                                                                                
-                        Hasan                     Caner                     Defne                  Hüseyin
+                        Hasan                    Caner                   Defne                  Hüseyin
                 """;
         System.out.print(cattle);
         System.out.println("-----------------------------------------------------------------------------------------------------");

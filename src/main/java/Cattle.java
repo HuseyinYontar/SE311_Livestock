@@ -26,7 +26,7 @@ public abstract class Cattle {
             System.out.print("Observer haven't set yet for cattleId:" + earTagUniqueId);
             return;
         }
-        observer.notify(this);
+        observer.update(this);
     }
 
     /**

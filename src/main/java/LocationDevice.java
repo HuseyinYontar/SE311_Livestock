@@ -4,13 +4,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public abstract class LocationDevice {
-    protected Cattle ownerCattle;
-    protected Location current_location;
+    private Cattle ownerCattle;
+    private Location currentLocation;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     public LocationDevice(Cattle ownerCattle) {
         this.ownerCattle = ownerCattle;
-        this.current_location = Randomizer.getRandomLocation();
+        this.currentLocation = Randomizer.getRandomLocation();
         // the cattle's location is updated every second. It was set to 1097 milliseconds
         // in order to prevent intervening the print statements of each other.
         scheduler.scheduleAtFixedRate(this::updateLocationEverySecond, 1097, 1097, TimeUnit.MILLISECONDS);
@@ -31,7 +31,7 @@ public abstract class LocationDevice {
     private void updateLocationEverySecond() {
         boolean wasOut = ownerCattle.getIsOut();
 
-        current_location.updateLocation(Randomizer.getRandomUpdateValue());
+        currentLocation.updateLocation(Randomizer.getRandomUpdateValue());
         boolean isNowOut = calculate_cattle_in_or_out();
 
         if (wasOut != isNowOut) {
@@ -44,11 +44,18 @@ public abstract class LocationDevice {
      * @return true if the cattle in the farm's boundaries, false if not.
      */
     private boolean calculate_cattle_in_or_out() {
-        int[] current_location_values = current_location.getLocation();
+        int[] current_location_values = currentLocation.getLocation();
         return Math.abs(current_location_values[0] - Farm.getFarmLocation().getLocation()[0]) > 100
                 || Math.abs(current_location_values[1] - Farm.getFarmLocation().getLocation()[1]) > 100;
     }
 
+    public Cattle getOwnerCattle() {
+        return ownerCattle;
+    }
+
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
 }
 
 class ZigbeeDevice extends LocationDevice {
@@ -58,7 +65,7 @@ class ZigbeeDevice extends LocationDevice {
 
     @Override
     void sendSignal() {
-        ZigbeeSignal signal = new ZigbeeSignal(ownerCattle.getEarTagUniqueId(), current_location);
+        ZigbeeSignal signal = new ZigbeeSignal(getOwnerCattle().getEarTagUniqueId(), getCurrentLocation());
         FarmDatabase.getInstance().updateCattleLocation(signal.sendZigbeeSignal());
     }
 }
@@ -70,7 +77,7 @@ class BluetoothDevice extends LocationDevice {
 
     @Override
     void sendSignal() {
-        BluetoothSignal bluetoothSignal = new BluetoothSignal(ownerCattle.getEarTagUniqueId(), current_location);
+        BluetoothSignal bluetoothSignal = new BluetoothSignal(getOwnerCattle().getEarTagUniqueId(), getCurrentLocation());
         BluetoothToZigbeeAdapter adapter = new BluetoothToZigbeeAdapter(bluetoothSignal);
         FarmDatabase.getInstance().updateCattleLocation(adapter.sendZigbeeSignal());
     }
