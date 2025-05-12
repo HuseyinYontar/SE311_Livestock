@@ -5,6 +5,7 @@ public interface Visitor {
 }
 
 class MinistryInspectorVisitor implements Visitor {
+    // Ministry Inspector visits the farm to check whether the cattle has unique barcode or not.
 
     @Override
     public void visit(DairyCattle cattle) {
@@ -26,6 +27,8 @@ class MinistryInspectorVisitor implements Visitor {
 }
 
 class VeterinarianVisitor implements Visitor {
+    // Veterinarian visits the farm to vaccinate all the cattle.
+
     @Override
     public void visit(DairyCattle cattle) {
         String status = cattle.getHealth();

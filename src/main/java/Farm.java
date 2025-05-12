@@ -28,21 +28,33 @@ public class Farm {
         farmLocation = new Location(0, 0);
     }
 
+    /**
+     * @param farmer Assigns a farmer to the farm, also sets the farmer's owned farm.
+     */
     public void addFarmer(Farmer farmer) {
         this.farmer = farmer;
         farmer.setOwnedFarm(this);
     }
 
+    /**
+     * @param cattle Allows adding new cattle to the farm.
+     */
     public void addCattle(Cattle cattle) {
         cattleList.add(cattle);
     }
 
-    public void setAllCattleObservers(Observer observer) {
+    /**
+     * @param observer Helper function for setting given observer to all cattle.
+     */
+    public void setObserverForAllCattle(Observer observer) {
         for (Cattle cattle : cattleList) {
             cattle.setObserver(observer);
         }
     }
 
+    /**
+     * @param visitor Helper function for allowing visitors to visit all cattle.
+     */
     public void acceptVisitors(Visitor visitor) {
         for (Cattle cattle : cattleList) {
             cattle.accept(visitor);
@@ -66,6 +78,11 @@ class Farmer implements Observer, Visitor {
         scheduler.scheduleAtFixedRate(this::feedAllCattleByTimer, 7, 15, TimeUnit.SECONDS);
     }
 
+    /**
+     * @param cattle This method is used in observer - subject relationship. Cattle invokes this
+     *              method if it is not in the farm boundary. The reason why this method is synchronized is that
+     *               every cattle updates its location with a method that is invoked by a scheduled thread.
+     */
     @Override
     public synchronized void notify(Cattle cattle) {
         boolean isCattleOut = cattle.getIsOut();
@@ -86,15 +103,21 @@ class Farmer implements Observer, Visitor {
         System.out.println("---------------------------");
     }
 
+    /**
+     * @param cattle Feeds the Dairy Cattle with its corresponding diet.
+     */
     @Override
     public void visit(DairyCattle cattle) {
         AbstractFoodFactory foodFactory = new DairyCattleFoodFactory();
         cattle.eat(foodFactory);
     }
 
+    /**
+     * @param cattle Feeds the Beef Cattle with its corresponding diet.
+     */
     @Override
     public void visit(BeefCattle cattle) {
-        AbstractFoodFactory foodFactory = new MeatCattleFoodFactory();
+        AbstractFoodFactory foodFactory = new BeefCattleFoodFactory();
         cattle.eat(foodFactory);
     }
 
@@ -102,6 +125,9 @@ class Farmer implements Observer, Visitor {
         this.ownedFarm = farm;
     }
 
+    /**
+     * Helper function for feeding all cattle in the farm. It is invoked by a timer every 15 seconds.
+     */
     public void feedAllCattleByTimer() {
         System.out.println("----Feeding All Cattle-----------------------------------------------------------");
         ownedFarm.acceptVisitors(this);
@@ -113,8 +139,12 @@ interface Observer {
     void notify(Cattle cattle);
 }
 
-class Test{
+class Simulate {
+    private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
     public static void main(String[] args) throws InterruptedException {
+        printArt();
+        
         Farm farm = new Farm();
         Farmer farmer = new Farmer("BALIKCI HASAN");
         farm.addFarmer(farmer);
@@ -125,12 +155,15 @@ class Test{
         DairyCattle cattle1 = new DairyCattle();
         BeefCattle cattle2 = new BeefCattle();
         DairyCattle cattle3 = new DairyCattle();
-        DairyCattle cattle4 = new DairyCattle();
-        BeefCattle cattle5 = new BeefCattle();
-        DairyCattle cattle6 = new DairyCattle();
+        BeefCattle cattle4 = new BeefCattle();
+        DairyCattle cattle5 = new DairyCattle();
+        BeefCattle cattle6 = new BeefCattle();
         DairyCattle cattle7 = new DairyCattle();
         BeefCattle cattle8 = new BeefCattle();
         DairyCattle cattle9 = new DairyCattle();
+        BeefCattle cattle10 = new BeefCattle();
+        DairyCattle cattle11 = new DairyCattle();
+        BeefCattle cattle12 = new BeefCattle();
 
         farm.addCattle(cattle1);
         farm.addCattle(cattle2);
@@ -141,14 +174,40 @@ class Test{
         farm.addCattle(cattle7);
         farm.addCattle(cattle8);
         farm.addCattle(cattle9);
+        farm.addCattle(cattle10);
+        farm.addCattle(cattle11);
+        farm.addCattle(cattle12);
 
-        farm.setAllCattleObservers(farmer);
+        farm.setObserverForAllCattle(farmer);
 
-        Thread.sleep(11000);
-        seasonalVisitorHelper(farm,visitorMinistry);
-        seasonalVisitorHelper(farm,visitorVeterinarian);
+        scheduler.scheduleAtFixedRate(() -> ministryVisitorHelper(farm, visitorMinistry), 15, 30, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(() -> veterinarianVisitorHelper(farm, visitorVeterinarian), 10, 25, TimeUnit.SECONDS);
+
     }
-    public static void seasonalVisitorHelper(Farm farm, Visitor visitor){
+    public static void ministryVisitorHelper(Farm farm, MinistryInspectorVisitor visitor){
+        System.out.println("-----------------------Ministry Inspector visits the farm-----------------------");
         farm.acceptVisitors(visitor);
+        System.out.println("--------------------------------------------------------------------------------");
+    }
+    public static void veterinarianVisitorHelper(Farm farm, VeterinarianVisitor visitor){
+        System.out.println("--------------------------Veterinarian visits the farm--------------------------");
+        farm.acceptVisitors(visitor);
+        System.out.println("--------------------------------------------------------------------------------");
+    }
+
+    public static void printArt(){
+        System.out.println("-----------------------------------------Welcome to our farm-----------------------------------------");
+        System.out.println("---------------------------------------------Prepared by---------------------------------------------");
+
+        String cattle = """
+                              (__)                    (__)                    (__)                    (__)
+                      `\\------(oo)            `\\------(oo)            `\\------(oo)            `\\------(oo)
+                        ||    (__)              ||    (__)              ||    (__)              ||    (__)
+                        ||w--||                 ||w--||                 ||w--||                 ||w--||        
+                                                                                               
+                        Hasan                     Caner                     Defne                  Hüseyin
+                """;
+        System.out.print(cattle);
+        System.out.println("-----------------------------------------------------------------------------------------------------");
     }
 }

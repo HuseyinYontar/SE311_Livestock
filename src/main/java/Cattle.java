@@ -1,11 +1,6 @@
 public abstract class Cattle {
     private static int cattleCounter = 0;
     private int earTagUniqueId = 0;
-
-    public abstract void accept(Visitor v);
-
-    public abstract String getHealth();
-
     private Observer observer;
     private boolean isOut;
     private LocationDevice device;
@@ -16,6 +11,16 @@ public abstract class Cattle {
         this.earTagUniqueId = ++cattleCounter;
     }
 
+    /**
+     * @param v It is one of the methods in visitor pattern. Allows visitor to do their job. {v.visit(this)};
+     */
+    public abstract void accept(Visitor v);
+
+    public abstract String getHealth();
+
+    /**
+     * Invokes notify method of observer, when the cattle itself is not in the farm.
+     */
     public void notifyObserver() {
         if (observer == null) {
             System.out.print("Observer haven't set yet for cattleId:" + earTagUniqueId);
@@ -24,6 +29,9 @@ public abstract class Cattle {
         observer.notify(this);
     }
 
+    /**
+     * @param foodFactory Dynamically generates both protein and carbohydrate food for the cattle.
+     */
     public void eat(AbstractFoodFactory foodFactory) {
         Protein protein = foodFactory.createProteinFood();
         Carbohydrate carbohydrate = foodFactory.createCarbohydrateFood();

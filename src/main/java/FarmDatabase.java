@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class FarmDatabase {
     private static Lock lock = new ReentrantLock();
     private static FarmDatabase instance;
-    private Map<Integer, ArrayList<String>> cattleLocations; //TODO: rapora hashmap görseli.
+    private Map<Integer, ArrayList<String>> cattleLocations;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     private FarmDatabase() {
@@ -32,6 +32,10 @@ public class FarmDatabase {
         return instance;
     }
 
+    /**
+     * @param zigbeeSignal location devices invokes this method and sends the cattle's
+     *                     id and location by using Zigbee Signal.
+     */
     public void updateCattleLocation(ZigbeeSignal zigbeeSignal) {
         try {
             lock.lock();

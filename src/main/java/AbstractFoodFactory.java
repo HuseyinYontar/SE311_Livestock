@@ -37,6 +37,22 @@ class Canola extends Protein {
 }
 
 public abstract class AbstractFoodFactory {
+    /*
+     * This java file uses the Abstract Factory Pattern to manage families of related objects—Protein and Carbohydrate
+     * foods without specifying their concrete classes.
+     *
+     *   Hierarchy:
+     * - Food (abstract): Base class defining common behavior for all foods.
+     *   - Protein (abstract): Subclass for protein-rich foods.
+     *       - Soybean, Canola (concrete classes)
+     *   - Carbohydrate (abstract): Subclass for carbohydrate-rich foods.
+     *       - Corn, Wheat (concrete classes)
+     *
+     * - AbstractFoodFactory (abstract): Declares creation methods for Protein and Carbohydrate.
+     *   - DairyCattleFoodFactory, BeefCattleFoodFactory (concrete): Implement food creation related to cattle types.
+     *
+     */
+
     abstract Protein createProteinFood();
 
     abstract Carbohydrate createCarbohydrateFood();
@@ -54,7 +70,7 @@ class DairyCattleFoodFactory extends AbstractFoodFactory {
     }
 }
 
-class MeatCattleFoodFactory extends AbstractFoodFactory {
+class BeefCattleFoodFactory extends AbstractFoodFactory {
     @Override
     public Carbohydrate createCarbohydrateFood() {
         return new Wheat();

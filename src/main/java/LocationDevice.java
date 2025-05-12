@@ -11,12 +11,23 @@ public abstract class LocationDevice {
     public LocationDevice(Cattle ownerCattle) {
         this.ownerCattle = ownerCattle;
         this.current_location = Randomizer.getRandomLocation();
+        // the cattle's location is updated every second. It was set to 1097 milliseconds
+        // in order to prevent intervening the print statements of each other.
         scheduler.scheduleAtFixedRate(this::updateLocationEverySecond, 1097, 1097, TimeUnit.MILLISECONDS);
+
+        // this scheduler sends location info every 5 seconds to the server.
         scheduler.scheduleAtFixedRate(this::sendSignal, 7500, 5000, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Each device sends signal to the database.
+     */
     abstract void sendSignal();
 
+    /**
+     * Updates cattle's location every second by generating random x and y values. If the cattle exits the
+     * farm boundary the observer is notified.
+     */
     private void updateLocationEverySecond() {
         boolean wasOut = ownerCattle.getIsOut();
 
@@ -77,6 +88,9 @@ class ZigbeeSignal {
     public ZigbeeSignal() {
     }
 
+    /**
+     * @return ZigbeeSignal when it is invoked by Zigbee devices.
+     */
     public ZigbeeSignal sendZigbeeSignal() {
         System.out.println("Zigbee signal sent to server. ↗");
         return this;
@@ -108,6 +122,9 @@ class BluetoothSignal {
         this.currentLocation = currentLocation;
     }
 
+    /**
+     * @return BluetoothSignal when it is invoked.
+     */
     public BluetoothSignal sendBluetoothSignal() {
         System.out.println("Bluetooth signal sent to adapter.        ⤵");
         return this;
@@ -130,12 +147,15 @@ class BluetoothToZigbeeAdapter extends ZigbeeSignal {
         bluetoothSignal = bSignal.sendBluetoothSignal();
     }
 
+    /**
+     * @return ZigbeeSignal when it is invoked. The method adapts Bluetooth signals to Zigbee signals.
+     */
     public ZigbeeSignal sendZigbeeSignal() {
-        System.out.println("Adapting Bluetooth signal to Zigbee...   ↕");
+        System.out.println("Adapting Bluetooth signal to Zigbee...   ↻");
         setEarTagUniqueId(bluetoothSignal.getEarTagUniqueId());
         setCurrentLocation(bluetoothSignal.getCurrentLocation());
         System.out.println("Adapted signal sent to server as Zigbee. ↗");
-        return this;
+        return this; //TODO: Caner cihaz kendini gönderir mi? sorusunu sordu discuss etmeli.
     }
 }
 
@@ -152,7 +172,10 @@ class Location {
         return new int[]{x_axis, y_axis};
     }
 
-    //TODO HASAN, updateLocation yerine addLocation daha mantıklı olabilir.
+
+    /**
+     * @param values Updates cattle's location by using the random location parameter values.
+     */
     public void updateLocation(int[] values) {
         x_axis = x_axis + values[0];
         y_axis = y_axis + values[1];
@@ -164,6 +187,8 @@ class Location {
 }
 
 class Randomizer {
+    // Utility class to provide random values for different cases.
+
     private static Random rd = new Random(System.currentTimeMillis());
 
     public static Location getRandomLocation() {
