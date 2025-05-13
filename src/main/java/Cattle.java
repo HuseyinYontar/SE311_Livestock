@@ -1,3 +1,9 @@
+// HASAN BASRİ KARSLIOĞLU
+// CANERCAN DEMİR
+// DEFNE YILMAZ
+// HÜSEYİN YONTAR
+// Project#3 Livestock
+
 public abstract class Cattle {
     private static int cattleCounter = 0;
     private int earTagUniqueId = 0;

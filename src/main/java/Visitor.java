@@ -1,3 +1,9 @@
+// HASAN BASRİ KARSLIOĞLU
+// CANERCAN DEMİR
+// DEFNE YILMAZ
+// HÜSEYİN YONTAR
+// Project#3 Livestock
+
 public interface Visitor {
     void visit(DairyCattle cattle);
 

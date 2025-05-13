@@ -1,3 +1,9 @@
+// HASAN BASRİ KARSLIOĞLU
+// CANERCAN DEMİR
+// DEFNE YILMAZ
+// HÜSEYİN YONTAR
+// Project#3 Livestock
+
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

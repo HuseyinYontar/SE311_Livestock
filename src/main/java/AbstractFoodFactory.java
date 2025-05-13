@@ -1,3 +1,9 @@
+// HASAN BASRİ KARSLIOĞLU
+// CANERCAN DEMİR
+// DEFNE YILMAZ
+// HÜSEYİN YONTAR
+// Project#3 Livestock
+
 abstract class Food {
     abstract String getNutritionInfo();
 }
