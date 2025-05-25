@@ -12,8 +12,8 @@ The farm system:
 ## 🧠 Design Patterns Used
 
 The system applies five key design patterns to structure the logic:
-  ###  Abstract Factory Pattern
-  ###  Adapter Pattern
-  ###  Observer Pattern
-  ###  Visitor Pattern
-  ###  Singleton Pattern
+  - Abstract Factory Pattern
+  - Adapter Pattern
+  - Observer Pattern
+  - Visitor Pattern
+  - Singleton Pattern
