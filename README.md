@@ -1,7 +1,7 @@
-🐄 Livestock System
+## 🐄 Livestock System
 This is a Java-based simulation of a smart cattle farm that tracks animal locations, manages their feeding routines, and supports seasonal veterinary inspections and regulatory checks — all implemented by using object-oriented design patterns.
 
-👨‍🌾 Project Overview
+## 👨‍🌾 Project Overview
 This software models a cattle farm where each animal is equipped with a device (Zigbee or Bluetooth) that tracks their location. 
 The farm system:
   - Monitors cattle positions in real time,
