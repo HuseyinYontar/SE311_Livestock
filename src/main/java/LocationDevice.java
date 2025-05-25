@@ -80,12 +80,13 @@ class BluetoothDevice extends LocationDevice {
     public BluetoothDevice(Cattle cattle) {
         super(cattle);
     }
+    private BluetoothToZigbeeAdapter bluetoothToZigbeeAdapter = new BluetoothToZigbeeAdapter();
 
     @Override
     void sendSignal() {
         BluetoothSignal bluetoothSignal = new BluetoothSignal(getOwnerCattle().getEarTagUniqueId(), getCurrentLocation());
-        BluetoothToZigbeeAdapter adapter = new BluetoothToZigbeeAdapter(bluetoothSignal);
-        FarmDatabase.getInstance().updateCattleLocation(adapter.sendZigbeeSignal());
+        bluetoothToZigbeeAdapter.setBluetoothSignal(bluetoothSignal);
+        FarmDatabase.getInstance().updateCattleLocation(bluetoothToZigbeeAdapter.sendZigbeeSignal());
     }
 }
 
@@ -160,6 +161,8 @@ class BluetoothToZigbeeAdapter extends ZigbeeSignal {
         bluetoothSignal = bSignal.sendBluetoothSignal();
     }
 
+    public BluetoothToZigbeeAdapter(){super();}
+
     /**
      * @return ZigbeeSignal when it is invoked. The method adapts Bluetooth signals to Zigbee signals.
      */
@@ -168,7 +171,11 @@ class BluetoothToZigbeeAdapter extends ZigbeeSignal {
         setEarTagUniqueId(bluetoothSignal.getEarTagUniqueId());
         setCurrentLocation(bluetoothSignal.getCurrentLocation());
         System.out.println("Adapted signal sent to server as Zigbee. ↗");
-        return this; //TODO: Caner cihaz kendini gönderir mi? sorusunu sordu discuss etmeli.
+        return this;
+    }
+
+    public void setBluetoothSignal(BluetoothSignal bluetoothSignal){
+        this.bluetoothSignal = bluetoothSignal.sendBluetoothSignal();
     }
 }
 
